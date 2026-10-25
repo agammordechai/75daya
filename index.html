@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>אתגר 75 יום לקראת הטיסה</title>
+  <link rel="apple-touch-icon" href="https://fav.farm/✈️">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Rubik', sans-serif; background: #070d19; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+    .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .custom-scroll::-webkit-scrollbar { display: none; }
+    .custom-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    input[type=checkbox] { accent-color: #10b981; }
+  </style>
+</head>
+<body class="min-h-screen pb-16 flex flex-col items-center">
+
+  <div class="w-full max-w-md px-4 pt-6 space-y-4">
+    <!-- Header -->
+    <div class="glass p-5 rounded-3xl shadow-xl border border-teal-500/20 text-center relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/30 rounded-full text-xs font-semibold text-teal-400 mb-2">
+        <span>✈️ יעד: 7 בינואר</span>
+        <span class="text-slate-500">•</span>
+        <span id="daysRemaining">75 יום</span>
+      </div>
+      <h1 class="text-2xl font-black tracking-tight text-white">אתגר 75 יום לקראת הטיסה</h1>
+      <p id="todayDateStr" class="text-xs text-slate-400 mt-1 font-medium"></p>
+
+      <!-- Progress -->
+      <div class="mt-4">
+        <div class="flex justify-between items-center text-xs font-bold mb-1.5 px-1">
+          <span class="text-slate-300">התקדמות יומית</span>
+          <span id="dailyPercent" class="text-teal-400">0%</span>
+        </div>
+        <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
+          <div id="dailyProgressBar" class="h-full bg-gradient-to-l from-emerald-400 to-teal-500 rounded-full transition-all duration-500 w-0"></div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-700/40 text-xs">
+        <div class="bg-slate-800/40 p-2 rounded-xl">
+          <span class="text-slate-400 block">רצף מושלם</span>
+          <span id="streakCount" class="text-base font-extrabold text-amber-400">🔥 0 ימים</span>
+        </div>
+        <div class="bg-slate-800/40 p-2 rounded-xl">
+          <span class="text-slate-400 block">יום באתגר</span>
+          <span id="currentDayNum" class="text-base font-extrabold text-teal-400">יום 1 / 75</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weight Tracker Section -->
+    <div class="glass p-4 rounded-2xl border border-indigo-500/20">
+      <div class="flex justify-between items-center mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-base">⚖️</span>
+          <span class="text-sm font-bold text-white">מעקב שקילה (סופ"ש)</span>
+        </div>
+        <span class="text-[11px] text-slate-400 font-medium">התחלה: 55.1 ק"ג</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="number" step="0.1" id="weightInput" placeholder="משקל נוכחי (למשל: 54.8)" 
+               class="bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 flex-1 outline-none focus:border-indigo-500">
+        <button onclick="saveWeight()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+          שמור
+        </button>
+      </div>
+      <div id="weightSummary" class="text-[11px] text-indigo-300 font-medium mt-2"></div>
+    </div>
+
+    <!-- Handstand Timer -->
+    <div class="glass p-3.5 rounded-2xl flex items-center justify-between border border-amber-500/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-lg">🤸‍♀️</div>
+        <div>
+          <div class="text-xs font-bold text-white">טיימר עמידת ידיים</div>
+          <div id="timerDisplay" class="text-base font-mono font-bold text-amber-300">02:00</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="toggleTimer()" id="timerBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg transition">התחל</button>
+        <button onclick="resetTimer()" class="bg-slate-800 text-slate-400 text-xs px-2.5 py-1.5 rounded-lg">איפוס</button>
+      </div>
+    </div>
+
+    <!-- Daily Tasks -->
+    <div class="space-y-2.5" id="tasksList">
+      <!-- Tasks rendered via JS -->
+    </div>
+  </div>
+
+  <script>
+    const START_DATE = new Date(2026, 9, 24); // 24 Oct 2026
+    const FLIGHT_DATE = new Date(2027, 0, 7);  // 7 Jan 2027
+    const PSYCHO_LIMIT = new Date(2026, 11, 5, 23, 59, 59); // 5 Dec 2026
+
+    let currentDayIndex = 0;
+    let data = JSON.parse(localStorage.getItem('flight75_data') || '{}');
+
+    function init() {
+      const today = new Date();
+      const diffTime = today - START_DATE;
+      currentDayIndex = Math.max(0, Math.min(74, Math.floor(diffTime / (1000 * 60 * 60 * 24))));
+      
+      const opt = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('todayDateStr').innerText = today.toLocaleDateString('he-IL', opt);
+      document.getElementById('currentDayNum').innerText = `יום ${currentDayIndex + 1} / 75`;
+      
+      const daysLeft = Math.ceil((FLIGHT_DATE - today) / (1000 * 60 * 60 * 24));
+      document.getElementById('daysRemaining').innerText = `${Math.max(0, daysLeft)} יום`;
+
+      if (!data[currentDayIndex]) {
+        data[currentDayIndex] = {
+          workout: false,
+          steps: 0,
+          handstand: false,
+          water: 0,
+          cleanFood: false,
+          cleanFoodEx: false,
+          noAlcohol: false,
+          noAlcoholEx: false,
+          psychometry: false,
+          weight: null
+        };
+      }
+      renderTasks();
+      updateUI();
+    }
+
+    function renderTasks() {
+      const day = data[currentDayIndex];
+      const isPsychoActive = new Date() <= PSYCHO_LIMIT;
+
+      const container = document.getElementById('tasksList');
+      container.innerHTML = `
+        <!-- אימון יומי -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">🏃‍♀️</span>
+            <div>
+              <div class="text-xs font-bold text-white">אימון כל יום</div>
+              <div class="text-[11px] text-slate-400">אימון כוח, ריצה, יוגה או הליכה</div>
+            </div>
+          </div>
+          <input type="checkbox" ${day.workout ? 'checked' : ''} onchange="toggleTask('workout')" class="w-5 h-5 rounded cursor-pointer">
+        </div>
+
+        <!-- 10,000 צעדים -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">👟</span>
+            <div>
+              <div class="text-xs font-bold text-white">לפחות 10,000 צעדים</div>
+              <div class="text-[11px] text-slate-400">צעדים היום: <span class="text-teal-300 font-bold font-mono">${(day.steps || 0).toLocaleString()}</span></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="addSteps(1000)" class="text-[10px] bg-slate-800 border border-slate-700 px-2 py-1 rounded-lg text-slate-300">+1,000</button>
+            <input type="checkbox" ${day.steps >= 10000 ? 'checked' : ''} onchange="toggleStepsCheckbox()" class="w-5 h-5 rounded cursor-pointer">
+          </div>
+        </div>
+
+        <!-- עמידת ידיים -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">🤸‍♀️</span>
+            <div>
+              <div class="text-xs font-bold text-white">תרגול עמידת ידיים</div>
+              <div class="text-[11px] text-slate-400">ממש כמה דקות של ריכוז ואיזון</div>
+            </div>
+          </div>
+          <input type="checkbox" ${day.handstand ? 'checked' : ''} onchange="toggleTask('handstand')" class="w-5 h-5 rounded cursor-pointer">
+        </div>
+
+        <!-- מים -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">💧</span>
+            <div>
+              <div class="text-xs font-bold text-white">שתיית מים מרובה</div>
+              <div class="text-[11px] text-slate-400 font-mono">${day.water || 0}/10 כוסות (~2.5 ליטר)</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="changeWater(-1)" class="w-6 h-6 bg-slate-800 border border-slate-700 text-slate-300 rounded-full flex items-center justify-center font-bold text-xs">-</button>
+            <span class="text-xs font-mono font-bold text-cyan-400 w-4 text-center">${day.water || 0}</span>
+            <button onclick="changeWater(1)" class="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center font-bold text-xs">+</button>
+          </div>
+        </div>
+
+        <!-- ללא מזון וסוכר מעובד -->
+        <div class="glass-card p-3 rounded-2xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">🥗</span>
+              <div>
+                <div class="text-xs font-bold text-white">ללא מזון וסוכר מעובד</div>
+                <div class="text-[11px] text-slate-400">אוכל נקי ומזין בלבד</div>
+              </div>
+            </div>
+            <input type="checkbox" ${day.cleanFood || day.cleanFoodEx ? 'checked' : ''} onchange="toggleTask('cleanFood')" class="w-5 h-5 rounded cursor-pointer">
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex justify-between items-center text-[11px]">
+            <span class="text-slate-400">אירוע חריג מותר?</span>
+            <button onclick="toggleEx('cleanFoodEx')" class="px-2 py-0.5 rounded text-[10px] font-bold ${day.cleanFoodEx ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-slate-800 text-slate-400'}">
+              ${day.cleanFoodEx ? 'סומן חריג מותר ✓' : 'סמן אירוע חריג'}
+            </button>
+          </div>
+        </div>
+
+        <!-- ללא אלכוהול -->
+        <div class="glass-card p-3 rounded-2xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">🚫</span>
+              <div>
+                <div class="text-xs font-bold text-white">ללא אלכוהול</div>
+                <div class="text-[11px] text-slate-400">ניקוי הגוף ושמירה על פוקוס</div>
+              </div>
+            </div>
+            <input type="checkbox" ${day.noAlcohol || day.noAlcoholEx ? 'checked' : ''} onchange="toggleTask('noAlcohol')" class="w-5 h-5 rounded cursor-pointer">
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 flex justify-between items-center text-[11px]">
+            <span class="text-slate-400">אירוע חריג מותר?</span>
+            <button onclick="toggleEx('noAlcoholEx')" class="px-2 py-0.5 rounded text-[10px] font-bold ${day.noAlcoholEx ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-slate-800 text-slate-400'}">
+              ${day.noAlcoholEx ? 'סומן חריג מותר ✓' : 'סמן אירוע חריג'}
+            </button>
+          </div>
+        </div>
+
+        <!-- לימוד לפסיכומטרי -->
+        <div class="glass-card p-3 rounded-2xl flex items-center justify-between ${!isPsychoActive ? 'opacity-40' : ''}">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">📚</span>
+            <div>
+              <div class="text-xs font-bold text-white">לימוד לפסיכומטרי</div>
+              <div class="text-[11px] text-slate-400">${isPsychoActive ? 'חובה עד 5 בדצמבר' : 'הסתיים ב-5 בדצמבר ✓'}</div>
+            </div>
+          </div>
+          <input type="checkbox" ${day.psychometry ? 'checked' : ''} onchange="toggleTask('psychometry')" class="w-5 h-5 rounded cursor-pointer" ${!isPsychoActive ? 'disabled' : ''}>
+        </div>
+      `;
+    }
+
+    function toggleTask(field) {
+      data[currentDayIndex][field] = !data[currentDayIndex][field];
+      save();
+    }
+
+    function toggleEx(field) {
+      data[currentDayIndex][field] = !data[currentDayIndex][field];
+      save();
+    }
+
+    function addSteps(amt) {
+      data[currentDayIndex].steps = (data[currentDayIndex].steps || 0) + amt;
+      save();
+    }
+
+    function toggleStepsCheckbox() {
+      if (data[currentDayIndex].steps >= 10000) {
+        data[currentDayIndex].steps = 0;
+      } else {
+        data[currentDayIndex].steps = 10000;
+      }
+      save();
+    }
+
+    function changeWater(delta) {
+      const cur = (data[currentDayIndex].water || 0) + delta;
+      data[currentDayIndex].water = Math.max(0, Math.min(10, cur));
+      save();
+    }
+
+    function saveWeight() {
+      const val = parseFloat(document.getElementById('weightInput').value);
+      if (!isNaN(val)) {
+        data[currentDayIndex].weight = val;
+        save();
+      }
+    }
+
+    function save() {
+      localStorage.setItem('flight75_data', JSON.stringify(data));
+      renderTasks();
+      updateUI();
+    }
+
+    function updateUI() {
+      const day = data[currentDayIndex];
+      const isPsychoActive = new Date() <= PSYCHO_LIMIT;
+
+      let totalTasks = 6;
+      let completed = 0;
+
+      if (day.workout) completed++;
+      if ((day.steps || 0) >= 10000) completed++;
+      if (day.handstand) completed++;
+      if ((day.water || 0) >= 10) completed++;
+      if (day.cleanFood || day.cleanFoodEx) completed++;
+      if (day.noAlcohol || day.noAlcoholEx) completed++;
+
+      if (isPsychoActive) {
+        totalTasks++;
+        if (day.psychometry) completed++;
+      }
+
+      const percent = Math.round((completed / totalTasks) * 100);
+      document.getElementById('dailyPercent').innerText = `${percent}%`;
+      document.getElementById('dailyProgressBar').style.width = `${percent}%`;
+
+      if (percent === 100 && !day.celebrated) {
+        day.celebrated = true;
+        confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+        localStorage.setItem('flight75_data', JSON.stringify(data));
+      }
+
+      // Weight UI
+      if (day.weight) {
+        const diff = (day.weight - 55.1).toFixed(1);
+        const sign = diff > 0 ? `+${diff}` : `${diff}`;
+        document.getElementById('weightSummary').innerText = `משקל אחרון: ${day.weight} ק"ג (${sign} ק"ג מההתחלה)`;
+      } else {
+        document.getElementById('weightSummary').innerText = `טרם נמדדה שקילה ליום זה`;
+      }
+    }
+
+    // Timer logic
+    let timerSec = 120;
+    let timerInterval = null;
+
+    function toggleTimer() {
+      const btn = document.getElementById('timerBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerText = 'המשך';
+      } else {
+        btn.innerText = 'עצור';
+        timerInterval = setInterval(() => {
+          if (timerSec > 0) {
+            timerSec--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            btn.innerText = 'הושלם!';
+            data[currentDayIndex].handstand = true;
+            save();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      timerSec = 120;
+      updateTimerDisplay();
+      document.getElementById('timerBtn').innerText = 'התחל';
+    }
+
+    function updateTimerDisplay() {
+      const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+      const s = String(timerSec % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+    }
+
+    init();
+  </script>
+</body>
+</html>
