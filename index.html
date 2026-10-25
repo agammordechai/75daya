@@ -4,34 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>אתגר 75 יום לקראת הטיסה</title>
-  <link rel="apple-touch-icon" href="https://fav.farm/✈️">
+  
+  <!-- App Icon using "trust the process" style -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ece4'/%3E%3Ctext x='50%25' y='36%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Etrust%3C/text%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Ethe%3C/text%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Eprocess%3C/text%3E%3C/svg%3E">
+  
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Rubik', sans-serif; background: #070d19; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
     .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
-    .custom-scroll::-webkit-scrollbar { display: none; }
-    .custom-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .quote-font { font-family: 'Montserrat', sans-serif; }
     input[type=checkbox] { accent-color: #10b981; }
   </style>
 </head>
 <body class="min-h-screen pb-16 flex flex-col items-center">
 
   <div class="w-full max-w-md px-4 pt-6 space-y-4">
-    <!-- Header -->
+    <!-- Header with Profile Cover -->
     <div class="glass p-5 rounded-3xl shadow-xl border border-teal-500/20 text-center relative overflow-hidden">
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Profile Badge Image: trust the process -->
+      <div class="flex justify-center mb-3">
+        <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none transform hover:scale-105 transition">
+          <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">trust</span>
+          <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">the</span>
+          <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">process</span>
+        </div>
+      </div>
+
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/30 rounded-full text-xs font-semibold text-teal-400 mb-2">
         <span>✈️ יעד: 7 בינואר</span>
         <span class="text-slate-500">•</span>
-        <span id="daysRemaining">75 יום</span>
+        <span id="daysRemaining">74 יום</span>
       </div>
       <h1 class="text-2xl font-black tracking-tight text-white">אתגר 75 יום לקראת הטיסה</h1>
-      <p id="todayDateStr" class="text-xs text-slate-400 mt-1 font-medium"></p>
+
+      <!-- Daily Motivational Quote (Changes at 00:00) -->
+      <div class="mt-3 px-3 py-2.5 bg-slate-900/50 rounded-2xl border border-amber-500/20 text-center">
+        <p class="text-[11px] font-semibold text-amber-300/90 leading-relaxed" id="dailyQuote">
+          "טוען משפט יומי..."
+        </p>
+      </div>
+
+      <!-- Date Navigation Bar -->
+      <div class="flex items-center justify-between mt-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/50">
+        <button onclick="changeDay(-1)" id="prevBtn" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold hover:bg-slate-700 transition">
+          →
+        </button>
+        <div class="text-center">
+          <div id="viewDateStr" class="text-xs font-bold text-white"></div>
+          <div id="isTodayBadge" class="text-[10px] font-medium"></div>
+        </div>
+        <button onclick="changeDay(1)" id="nextBtn" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold hover:bg-slate-700 transition">
+          ←
+        </button>
+      </div>
 
       <!-- Progress -->
       <div class="mt-4">
@@ -51,7 +83,7 @@
           <span id="streakCount" class="text-base font-extrabold text-amber-400">🔥 0 ימים</span>
         </div>
         <div class="bg-slate-800/40 p-2 rounded-xl">
-          <span class="text-slate-400 block">יום באתגר</span>
+          <span class="text-slate-400 block">יום מוצג</span>
           <span id="currentDayNum" class="text-base font-extrabold text-teal-400">יום 1 / 75</span>
         </div>
       </div>
@@ -67,7 +99,7 @@
         <span class="text-[11px] text-slate-400 font-medium">התחלה: 55.1 ק"ג</span>
       </div>
       <div class="flex items-center gap-2">
-        <input type="number" step="0.1" id="weightInput" placeholder="משקל נוכחי (למשל: 54.8)" 
+        <input type="number" step="0.1" id="weightInput" placeholder="משקל ליום זה (למשל: 55.1)" 
                class="bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 flex-1 outline-none focus:border-indigo-500">
         <button onclick="saveWeight()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
           שמור
@@ -102,27 +134,113 @@
     const FLIGHT_DATE = new Date(2027, 0, 7);  // 7 Jan 2027
     const PSYCHO_LIMIT = new Date(2026, 11, 5, 23, 59, 59); // 5 Dec 2026
 
-    let currentDayIndex = 0;
+    // 75 Daily Motivational Quotes
+    const MOTIVATIONAL_QUOTES = [
+      "משמעת היא הגשר בין מטרות להישגים.",
+      "התוצאות שאת רוצה מחר תלויות בהחלטות שאת מקבלת היום.",
+      "תסמכי על התהליך – כל יום קטן יוצר שינוי ענק.",
+      "הכוח האמיתי מתגלה כשעושים את מה שצריך, גם כשאין חשק.",
+      "את לא צריכה להיות מושלמת, את רק צריכה להיות עקבית.",
+      "ההצלחה שלך ב-7 בינואר נבנית ברגע זה ממש.",
+      "גוף בריא ופוקוס מנטלי הם הדברים הכי טובים שתוכלי לתת לעצמך.",
+      "משמעת עצמית היא הצורה העמוקה ביותר של אהבה עצמית.",
+      "המאמץ של היום הוא הביטחון של מחר.",
+      "אל תעצרי עד שתהיי גאה בעצמך.",
+      "העקביות תמיד מנצחת את המוטיבציה הרגעית.",
+      "ניצחון בוקר מביא ניצחון יום. התחילי חזק.",
+      "שינוי קורה מחוץ לאזור הנוחות.",
+      "כל כוס מים, כל צעד וכל דקת אימון – הכל נספר ומצטבר.",
+      "כשקשה לזכור למה התחלת, תחשבי על התחושה ברגע העלייה למטוס.",
+      "הגבולות קיימים רק במחשבה.",
+      "כבוד עצמי נבנה מהבטחות שאת מקיימת לעצמך.",
+      "שמחה היא לא מקרה – היא תוצאה של סדר פנימי ומשמעת.",
+      "התמקדי בהתקדמות, לא בשלמות.",
+      "עוד צעד אחד, עוד יום מושלם ברצף.",
+      "ההבדל בין מי שאת היום למי שתהיי – זה מה שאת עושה היום.",
+      "עמידת ידיים מלמדת שיווי משקל גם בראש וגם בגוף.",
+      "שום דבר בעל ערך לא מגיע בקלות. תמשיכי קדימה.",
+      "פוקוס, נחישות ואפס תירוצים.",
+      "התחושה של יום שהושלם ב-100% שווה כל מאמץ.",
+      "הגוף שלך מסוגל להכל – עכשיו תורך לשכנע את הראש.",
+      "יום טוב הוא יום שבו עמדת בכל היעדים שלך.",
+      "כל בחירה נקייה באוכל היא הצהרה על מה שמגיע לך.",
+      "התוצאות מדברות חזק יותר מכל תירוץ.",
+      "את בונה כאן גרסה חזקה, קלילה וממוקדת יותר.",
+      "הדרך לפסגה מורכבת מצעדים רגילים שנמשכים כל יום.",
+      "שמרי על הסטנדרטים שלך גבוהים.",
+      "ההצלחה מתחילה בבחירה להאמין שזה אפשרי.",
+      "אנרגיה גבוהה נוצרת מעשייה, לא ממנוחה.",
+      "תני לתוצאות להפתיע אותך.",
+      "משמעת ברזל יוצרת חופש אמיתי.",
+      "את כבר באמצע הדרך – אין מקום להסתכל לאחור.",
+      "האתגר הזה מוכיח לך בדיוק למה את מסוגלת.",
+      "נשימה עמוקה, פוקוס ולהמשיך הלאה.",
+      "היום הוא עוד הזדמנות לנצח את עצמך.",
+      "שום דבר לא משתווה להרגשה שאת בשליטה מלאה על החיים שלך.",
+      "העבודה הקשה שקטה, התוצאות יהיו רועשות.",
+      "הגוף שלך מודה לך על כל יום נקי ומלא מים.",
+      "אל תוותרי על מה שאת הכי רוצה בשביל מה שבא לך כרגע.",
+      "משמעת היא שריר – ככל שמשתמשים בו יותר, הוא מתחזק.",
+      "הביטחון שלך ימריא הרבה לפני הטיסה.",
+      "עקביות היא הסוד הגדול של כל המצליחנים.",
+      "תהיי השראה לעצמך של מחר.",
+      "אין הרגשה מתגמלת יותר מרצף ימים מושלם.",
+      "הפסיכומטרי, הכושר והתזונה – את מנהלת הכל ביד רמה.",
+      "תחגגי את הניצחונות הקטנים לאורך הדרך.",
+      "שמחה אמיתית מגיעה מהידיעה שנתת את המקסימום.",
+      "את לא מוותרת, את פשוט משתפרת.",
+      "עוד יום של ניקיון, חדות ואנרגיה.",
+      "תסמכי על הדרך שבחרת – היא מביאה אותך בדיוק ליעד.",
+      "החופש והקלילות מחכים לך בקו הסיום.",
+      "השליטה במחשבות יוצרת שליטה בחיים.",
+      "יום חדש, מטרה ברורה, ביצוע ללא פשרות.",
+      "העוצמה שבך גדולה מכל מכשול.",
+      "עוד צעד קרוב יותר ל-7 בינואר.",
+      "משמעת יוצרת שקט נפשי.",
+      "את החוזק הפנימי הזה אי אפשר לקחת ממך.",
+      "גאה בך על כל יום שאת לא מוותרת לעצמך.",
+      "תני לגוף שלך בדיוק מה שהוא צריך: מים, תנועה ואוכל אמיתי.",
+      "זה לא רק 75 יום – זה אורח חיים מנצח.",
+      "ההבדל בין חלום למציאות הוא תאריך יעד ועבודה יומיומית.",
+      "תשמרי על הלהבה והרצף דולקים.",
+      "נשאר רק עוד קצת – תסיימי כמו אלופה.",
+      "את כבר רואה את קו הסיום באופק.",
+      "הגוף שלך חזק, המוח שלך חד.",
+      "כל התהליך הזה היה שווה את זה.",
+      "המשמעת של היום תלווה אותך בכל מה שתעשי.",
+      "ימים אחרונים – לתת את כל הלב!",
+      "מחר זה מגיע – את מגיעה הכי מוכנה שיש!",
+      "עשית את זה! 75 יום של ניצחון מוחלט לקראת הטיסה! ✈️"
+    ];
+
+    let realTodayIndex = 0;
+    let viewingDayIndex = 0;
     let data = JSON.parse(localStorage.getItem('flight75_data') || '{}');
 
     function init() {
       const today = new Date();
       const diffTime = today - START_DATE;
-      currentDayIndex = Math.max(0, Math.min(74, Math.floor(diffTime / (1000 * 60 * 60 * 24))));
-      
-      const opt = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('todayDateStr').innerText = today.toLocaleDateString('he-IL', opt);
-      document.getElementById('currentDayNum').innerText = `יום ${currentDayIndex + 1} / 75`;
-      
+      realTodayIndex = Math.max(0, Math.min(74, Math.floor(diffTime / (1000 * 60 * 60 * 24))));
+      viewingDayIndex = realTodayIndex;
+
       const daysLeft = Math.ceil((FLIGHT_DATE - today) / (1000 * 60 * 60 * 24));
       document.getElementById('daysRemaining').innerText = `${Math.max(0, daysLeft)} יום`;
 
-      if (!data[currentDayIndex]) {
-        data[currentDayIndex] = {
+      // Set daily motivational quote based on today's index (changes at midnight)
+      const quoteIndex = Math.min(MOTIVATIONAL_QUOTES.length - 1, realTodayIndex);
+      document.getElementById('dailyQuote').innerText = `"${MOTIVATIONAL_QUOTES[quoteIndex]}"`;
+
+      ensureDayData(viewingDayIndex);
+      renderView();
+    }
+
+    function ensureDayData(idx) {
+      if (!data[idx]) {
+        data[idx] = {
           workout: false,
           steps: 0,
           handstand: false,
-          water: 0,
+          water: false,
           cleanFood: false,
           cleanFoodEx: false,
           noAlcohol: false,
@@ -131,13 +249,54 @@
           weight: null
         };
       }
+    }
+
+    function getDateForIndex(idx) {
+      const d = new Date(START_DATE);
+      d.setDate(d.getDate() + idx);
+      return d;
+    }
+
+    function changeDay(delta) {
+      const newIdx = viewingDayIndex + delta;
+      if (newIdx >= 0 && newIdx <= 74) {
+        viewingDayIndex = newIdx;
+        ensureDayData(viewingDayIndex);
+        renderView();
+      }
+    }
+
+    function renderView() {
+      const viewDate = getDateForIndex(viewingDayIndex);
+      const opt = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' };
+      document.getElementById('viewDateStr').innerText = viewDate.toLocaleDateString('he-IL', opt);
+      
+      const badge = document.getElementById('isTodayBadge');
+      if (viewingDayIndex === realTodayIndex) {
+        badge.innerText = 'היום';
+        badge.className = 'text-[10px] text-teal-400 font-semibold';
+      } else if (viewingDayIndex < realTodayIndex) {
+        badge.innerText = `לפני ${realTodayIndex - viewingDayIndex} ימים (ניתן לעריכה)`;
+        badge.className = 'text-[10px] text-amber-400 font-semibold';
+      } else {
+        badge.innerText = 'יום עתידי';
+        badge.className = 'text-[10px] text-slate-400 font-semibold';
+      }
+
+      document.getElementById('currentDayNum').innerText = `יום ${viewingDayIndex + 1} / 75`;
+      document.getElementById('prevBtn').disabled = (viewingDayIndex === 0);
+      document.getElementById('nextBtn').disabled = (viewingDayIndex === 74);
+      document.getElementById('prevBtn').style.opacity = viewingDayIndex === 0 ? '0.3' : '1';
+      document.getElementById('nextBtn').style.opacity = viewingDayIndex === 74 ? '0.3' : '1';
+
       renderTasks();
       updateUI();
     }
 
     function renderTasks() {
-      const day = data[currentDayIndex];
-      const isPsychoActive = new Date() <= PSYCHO_LIMIT;
+      const day = data[viewingDayIndex];
+      const viewDate = getDateForIndex(viewingDayIndex);
+      const isPsychoActive = viewDate <= PSYCHO_LIMIT;
 
       const container = document.getElementById('tasksList');
       container.innerHTML = `
@@ -159,7 +318,7 @@
             <span class="text-lg">👟</span>
             <div>
               <div class="text-xs font-bold text-white">לפחות 10,000 צעדים</div>
-              <div class="text-[11px] text-slate-400">צעדים היום: <span class="text-teal-300 font-bold font-mono">${(day.steps || 0).toLocaleString()}</span></div>
+              <div class="text-[11px] text-slate-400">צעדים: <span class="text-teal-300 font-bold font-mono">${(day.steps || 0).toLocaleString()}</span></div>
             </div>
           </div>
           <div class="flex items-center gap-1.5">
@@ -180,20 +339,16 @@
           <input type="checkbox" ${day.handstand ? 'checked' : ''} onchange="toggleTask('handstand')" class="w-5 h-5 rounded cursor-pointer">
         </div>
 
-        <!-- מים -->
+        <!-- מים (לחצן סימון מלא - לפחות 3 ליטר) -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-lg">💧</span>
             <div>
               <div class="text-xs font-bold text-white">שתיית מים מרובה</div>
-              <div class="text-[11px] text-slate-400 font-mono">${day.water || 0}/10 כוסות (~2.5 ליטר)</div>
+              <div class="text-[11px] text-slate-400">לפחות 3 ליטר מים ביום</div>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="changeWater(-1)" class="w-6 h-6 bg-slate-800 border border-slate-700 text-slate-300 rounded-full flex items-center justify-center font-bold text-xs">-</button>
-            <span class="text-xs font-mono font-bold text-cyan-400 w-4 text-center">${day.water || 0}</span>
-            <button onclick="changeWater(1)" class="w-6 h-6 bg-cyan-600 text-white rounded-full flex items-center justify-center font-bold text-xs">+</button>
-          </div>
+          <input type="checkbox" ${day.water ? 'checked' : ''} onchange="toggleTask('water')" class="w-5 h-5 rounded cursor-pointer">
         </div>
 
         <!-- ללא מזון וסוכר מעובד -->
@@ -223,7 +378,7 @@
               <span class="text-lg">🚫</span>
               <div>
                 <div class="text-xs font-bold text-white">ללא אלכוהול</div>
-                <div class="text-[11px] text-slate-400">ניקוי הגוף ושמירה על פוקוס</div>
+                <div class="text-[11px] text-slate-400">שמירה על גוף נקי ופוקוס</div>
               </div>
             </div>
             <input type="checkbox" ${day.noAlcohol || day.noAlcoholEx ? 'checked' : ''} onchange="toggleTask('noAlcohol')" class="w-5 h-5 rounded cursor-pointer">
@@ -251,39 +406,33 @@
     }
 
     function toggleTask(field) {
-      data[currentDayIndex][field] = !data[currentDayIndex][field];
+      data[viewingDayIndex][field] = !data[viewingDayIndex][field];
       save();
     }
 
     function toggleEx(field) {
-      data[currentDayIndex][field] = !data[currentDayIndex][field];
+      data[viewingDayIndex][field] = !data[viewingDayIndex][field];
       save();
     }
 
     function addSteps(amt) {
-      data[currentDayIndex].steps = (data[currentDayIndex].steps || 0) + amt;
+      data[viewingDayIndex].steps = (data[viewingDayIndex].steps || 0) + amt;
       save();
     }
 
     function toggleStepsCheckbox() {
-      if (data[currentDayIndex].steps >= 10000) {
-        data[currentDayIndex].steps = 0;
+      if (data[viewingDayIndex].steps >= 10000) {
+        data[viewingDayIndex].steps = 0;
       } else {
-        data[currentDayIndex].steps = 10000;
+        data[viewingDayIndex].steps = 10000;
       }
-      save();
-    }
-
-    function changeWater(delta) {
-      const cur = (data[currentDayIndex].water || 0) + delta;
-      data[currentDayIndex].water = Math.max(0, Math.min(10, cur));
       save();
     }
 
     function saveWeight() {
       const val = parseFloat(document.getElementById('weightInput').value);
       if (!isNaN(val)) {
-        data[currentDayIndex].weight = val;
+        data[viewingDayIndex].weight = val;
         save();
       }
     }
@@ -294,9 +443,41 @@
       updateUI();
     }
 
+    function isDayCompleted(idx) {
+      const d = data[idx];
+      if (!d) return false;
+      const date = getDateForIndex(idx);
+      const needsPsycho = date <= PSYCHO_LIMIT;
+
+      const basicOk = d.workout && 
+                      (d.steps >= 10000) && 
+                      d.handstand && 
+                      d.water && 
+                      (d.cleanFood || d.cleanFoodEx) && 
+                      (d.noAlcohol || d.noAlcoholEx);
+
+      if (needsPsycho) {
+        return basicOk && d.psychometry;
+      }
+      return basicOk;
+    }
+
+    function calculateStreak() {
+      let streak = 0;
+      for (let i = realTodayIndex; i >= 0; i--) {
+        if (isDayCompleted(i)) {
+          streak++;
+        } else if (i < realTodayIndex) {
+          break;
+        }
+      }
+      return streak;
+    }
+
     function updateUI() {
-      const day = data[currentDayIndex];
-      const isPsychoActive = new Date() <= PSYCHO_LIMIT;
+      const day = data[viewingDayIndex];
+      const viewDate = getDateForIndex(viewingDayIndex);
+      const isPsychoActive = viewDate <= PSYCHO_LIMIT;
 
       let totalTasks = 6;
       let completed = 0;
@@ -304,7 +485,7 @@
       if (day.workout) completed++;
       if ((day.steps || 0) >= 10000) completed++;
       if (day.handstand) completed++;
-      if ((day.water || 0) >= 10) completed++;
+      if (day.water) completed++;
       if (day.cleanFood || day.cleanFoodEx) completed++;
       if (day.noAlcohol || day.noAlcoholEx) completed++;
 
@@ -323,13 +504,17 @@
         localStorage.setItem('flight75_data', JSON.stringify(data));
       }
 
+      document.getElementById('streakCount').innerText = `🔥 ${calculateStreak()} ימים`;
+
       // Weight UI
       if (day.weight) {
         const diff = (day.weight - 55.1).toFixed(1);
         const sign = diff > 0 ? `+${diff}` : `${diff}`;
-        document.getElementById('weightSummary').innerText = `משקל אחרון: ${day.weight} ק"ג (${sign} ק"ג מההתחלה)`;
+        document.getElementById('weightSummary').innerText = `משקל ליום זה: ${day.weight} ק"ג (${sign} ק"ג מההתחלה)`;
+        document.getElementById('weightInput').value = day.weight;
       } else {
         document.getElementById('weightSummary').innerText = `טרם נמדדה שקילה ליום זה`;
+        document.getElementById('weightInput').value = '';
       }
     }
 
@@ -353,7 +538,7 @@
             clearInterval(timerInterval);
             timerInterval = null;
             btn.innerText = 'הושלם!';
-            data[currentDayIndex].handstand = true;
+            data[viewingDayIndex].handstand = true;
             save();
           }
         }, 1000);
