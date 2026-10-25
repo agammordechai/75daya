@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>אתגר 75 יום לקראת הטיסה</title>
   
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ece4'/%3E%3Ctext x='50%25' y='36%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Etrust%3C/text%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Ethe%3C/text%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Eprocess%3C/text%3E%3C/svg%3E">
+  <!-- אייקון למסך הבית בעיצוב trust the process -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23f3ece4'/%3E%3Ctext x='50%25' y='36%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Etrust%3C/text%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Ethe%3C/text%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Eprocess%3C/text%3E%3C/svg%3E">
   
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -27,7 +28,7 @@
     <div class="glass p-5 rounded-3xl shadow-xl border border-teal-500/20 text-center relative overflow-hidden">
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Profile Badge Image: trust the process -->
+      <!-- תמונת הפרופיל -->
       <div class="flex justify-center mb-3">
         <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none">
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">trust</span>
@@ -43,14 +44,14 @@
       </div>
       <h1 class="text-2xl font-black tracking-tight text-white">אתגר 75 יום לקראת הטיסה</h1>
 
-      <!-- Daily Motivational Quote -->
+      <!-- ציטוט יומי -->
       <div class="mt-3 px-3 py-2.5 bg-slate-900/50 rounded-2xl border border-amber-500/20 text-center">
         <p class="text-[11px] font-semibold text-amber-300/90 leading-relaxed" id="dailyQuote">
           "טוען משפט יומי..."
         </p>
       </div>
 
-      <!-- Date Navigation Bar -->
+      <!-- סרגל מעבר בין ימים -->
       <div class="flex items-center justify-between mt-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/50">
         <button onclick="changeDay(-1)" id="prevBtn" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold hover:bg-slate-700 transition">
           →
@@ -64,7 +65,7 @@
         </button>
       </div>
 
-      <!-- Progress -->
+      <!-- התקדמות -->
       <div class="mt-4">
         <div class="flex justify-between items-center text-xs font-bold mb-1.5 px-1">
           <span class="text-slate-300">התקדמות יומית</span>
@@ -75,7 +76,7 @@
         </div>
       </div>
 
-      <!-- Quick Stats -->
+      <!-- סטטיסטיקות -->
       <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-700/40 text-xs">
         <div class="bg-slate-800/40 p-2 rounded-xl">
           <span class="text-slate-400 block">רצף מושלם</span>
@@ -88,7 +89,7 @@
       </div>
     </div>
 
-    <!-- Weight Tracker Section -->
+    <!-- מעקב שקילה -->
     <div class="glass p-4 rounded-2xl border border-indigo-500/20">
       <div class="flex justify-between items-center mb-2">
         <div class="flex items-center gap-2">
@@ -107,7 +108,7 @@
       <div id="weightSummary" class="text-[11px] text-indigo-300 font-medium mt-2"></div>
     </div>
 
-    <!-- Handstand Timer -->
+    <!-- טיימר עמידת ידיים -->
     <div class="glass p-3.5 rounded-2xl flex items-center justify-between border border-amber-500/20">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 text-lg">🤸‍♀️</div>
@@ -122,16 +123,14 @@
       </div>
     </div>
 
-    <!-- Daily Tasks -->
-    <div class="space-y-2.5" id="tasksList">
-      <!-- Tasks rendered via JS -->
-    </div>
+    <!-- רשימת משימות -->
+    <div class="space-y-2.5" id="tasksList"></div>
   </div>
 
   <script>
-    const START_DATE = new Date(2026, 9, 24); // 24 Oct 2026
-    const FLIGHT_DATE = new Date(2027, 0, 7);  // 7 Jan 2027
-    const PSYCHO_LIMIT = new Date(2026, 11, 5, 23, 59, 59); // 5 Dec 2026
+    const START_YEAR = 2026, START_MONTH = 9, START_DAY = 24; // 24.10.2026
+    const FLIGHT_DATE = new Date(2027, 0, 7);  // 07.01.2027
+    const PSYCHO_LIMIT = new Date(2026, 11, 5, 23, 59, 59); // 05.12.2026
 
     const MOTIVATIONAL_QUOTES = [
       "משמעת היא הגשר בין מטרות להישגים.",
@@ -215,7 +214,18 @@
     let viewingDayIndex = 0;
     let data = {};
 
-    // Persistent storage engine
+    function getLocalTodayDate() {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    function calculateDayIndex() {
+      const startMidnight = new Date(START_YEAR, START_MONTH, START_DAY);
+      const todayMidnight = getLocalTodayDate();
+      const diffMs = todayMidnight.getTime() - startMidnight.getTime();
+      return Math.round(diffMs / (1000 * 60 * 60 * 24));
+    }
+
     function loadSavedData() {
       try {
         const raw = localStorage.getItem('flight75_permanent_data');
@@ -227,13 +237,11 @@
 
     function init() {
       loadSavedData();
-
-      const today = new Date();
-      const diffTime = today - START_DATE;
-      realTodayIndex = Math.max(0, Math.min(74, Math.floor(diffTime / (1000 * 60 * 60 * 24))));
+      realTodayIndex = Math.max(0, Math.min(74, calculateDayIndex()));
       viewingDayIndex = realTodayIndex;
 
-      const daysLeft = Math.ceil((FLIGHT_DATE - today) / (1000 * 60 * 60 * 24));
+      const todayMidnight = getLocalTodayDate();
+      const daysLeft = Math.ceil((FLIGHT_DATE.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
       document.getElementById('daysRemaining').innerText = `${Math.max(0, daysLeft)} יום`;
 
       const quoteIndex = Math.min(MOTIVATIONAL_QUOTES.length - 1, realTodayIndex);
@@ -261,7 +269,7 @@
     }
 
     function getDateForIndex(idx) {
-      const d = new Date(START_DATE);
+      const d = new Date(START_YEAR, START_MONTH, START_DAY);
       d.setDate(d.getDate() + idx);
       return d;
     }
@@ -523,7 +531,6 @@
       }
     }
 
-    // Handstand timer
     let timerSec = 120;
     let timerInterval = null;
 
