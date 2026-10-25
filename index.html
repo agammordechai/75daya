@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>אתגר 75 יום לקראת הטיסה</title>
   
-  <!-- App Icon using "trust the process" style -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23f3ece4'/%3E%3Ctext x='50%25' y='36%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Etrust%3C/text%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Ethe%3C/text%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='82' fill='%23111'%3Eprocess%3C/text%3E%3C/svg%3E">
   
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -30,7 +29,7 @@
 
       <!-- Profile Badge Image: trust the process -->
       <div class="flex justify-center mb-3">
-        <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none transform hover:scale-105 transition">
+        <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none">
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">trust</span>
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">the</span>
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">process</span>
@@ -44,7 +43,7 @@
       </div>
       <h1 class="text-2xl font-black tracking-tight text-white">אתגר 75 יום לקראת הטיסה</h1>
 
-      <!-- Daily Motivational Quote (Changes at 00:00) -->
+      <!-- Daily Motivational Quote -->
       <div class="mt-3 px-3 py-2.5 bg-slate-900/50 rounded-2xl border border-amber-500/20 text-center">
         <p class="text-[11px] font-semibold text-amber-300/90 leading-relaxed" id="dailyQuote">
           "טוען משפט יומי..."
@@ -134,7 +133,6 @@
     const FLIGHT_DATE = new Date(2027, 0, 7);  // 7 Jan 2027
     const PSYCHO_LIMIT = new Date(2026, 11, 5, 23, 59, 59); // 5 Dec 2026
 
-    // 75 Daily Motivational Quotes
     const MOTIVATIONAL_QUOTES = [
       "משמעת היא הגשר בין מטרות להישגים.",
       "התוצאות שאת רוצה מחר תלויות בהחלטות שאת מקבלת היום.",
@@ -215,9 +213,21 @@
 
     let realTodayIndex = 0;
     let viewingDayIndex = 0;
-    let data = JSON.parse(localStorage.getItem('flight75_data') || '{}');
+    let data = {};
+
+    // Persistent storage engine
+    function loadSavedData() {
+      try {
+        const raw = localStorage.getItem('flight75_permanent_data');
+        if (raw) data = JSON.parse(raw);
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
     function init() {
+      loadSavedData();
+
       const today = new Date();
       const diffTime = today - START_DATE;
       realTodayIndex = Math.max(0, Math.min(74, Math.floor(diffTime / (1000 * 60 * 60 * 24))));
@@ -226,7 +236,6 @@
       const daysLeft = Math.ceil((FLIGHT_DATE - today) / (1000 * 60 * 60 * 24));
       document.getElementById('daysRemaining').innerText = `${Math.max(0, daysLeft)} יום`;
 
-      // Set daily motivational quote based on today's index (changes at midnight)
       const quoteIndex = Math.min(MOTIVATIONAL_QUOTES.length - 1, realTodayIndex);
       document.getElementById('dailyQuote').innerText = `"${MOTIVATIONAL_QUOTES[quoteIndex]}"`;
 
@@ -300,7 +309,6 @@
 
       const container = document.getElementById('tasksList');
       container.innerHTML = `
-        <!-- אימון יומי -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-lg">🏃‍♀️</span>
@@ -312,7 +320,6 @@
           <input type="checkbox" ${day.workout ? 'checked' : ''} onchange="toggleTask('workout')" class="w-5 h-5 rounded cursor-pointer">
         </div>
 
-        <!-- 10,000 צעדים -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-lg">👟</span>
@@ -327,7 +334,6 @@
           </div>
         </div>
 
-        <!-- עמידת ידיים -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-lg">🤸‍♀️</span>
@@ -339,7 +345,6 @@
           <input type="checkbox" ${day.handstand ? 'checked' : ''} onchange="toggleTask('handstand')" class="w-5 h-5 rounded cursor-pointer">
         </div>
 
-        <!-- מים (לחצן סימון מלא - לפחות 3 ליטר) -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
           <div class="flex items-center gap-3">
             <span class="text-lg">💧</span>
@@ -351,7 +356,6 @@
           <input type="checkbox" ${day.water ? 'checked' : ''} onchange="toggleTask('water')" class="w-5 h-5 rounded cursor-pointer">
         </div>
 
-        <!-- ללא מזון וסוכר מעובד -->
         <div class="glass-card p-3 rounded-2xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -371,7 +375,6 @@
           </div>
         </div>
 
-        <!-- ללא אלכוהול -->
         <div class="glass-card p-3 rounded-2xl">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -391,7 +394,6 @@
           </div>
         </div>
 
-        <!-- לימוד לפסיכומטרי -->
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between ${!isPsychoActive ? 'opacity-40' : ''}">
           <div class="flex items-center gap-3">
             <span class="text-lg">📚</span>
@@ -438,7 +440,11 @@
     }
 
     function save() {
-      localStorage.setItem('flight75_data', JSON.stringify(data));
+      try {
+        localStorage.setItem('flight75_permanent_data', JSON.stringify(data));
+      } catch (e) {
+        console.error(e);
+      }
       renderTasks();
       updateUI();
     }
@@ -501,12 +507,11 @@
       if (percent === 100 && !day.celebrated) {
         day.celebrated = true;
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
-        localStorage.setItem('flight75_data', JSON.stringify(data));
+        save();
       }
 
       document.getElementById('streakCount').innerText = `🔥 ${calculateStreak()} ימים`;
 
-      // Weight UI
       if (day.weight) {
         const diff = (day.weight - 55.1).toFixed(1);
         const sign = diff > 0 ? `+${diff}` : `${diff}`;
@@ -518,7 +523,7 @@
       }
     }
 
-    // Timer logic
+    // Handstand timer
     let timerSec = 120;
     let timerInterval = null;
 
