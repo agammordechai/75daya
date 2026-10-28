@@ -27,7 +27,7 @@
     <div class="glass p-5 rounded-3xl shadow-xl border border-teal-500/20 text-center relative overflow-hidden">
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- תמונת פרופיל -->
+      <!-- Profile Badge Image: trust the process -->
       <div class="flex justify-center mb-3">
         <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none">
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">trust</span>
@@ -50,7 +50,7 @@
         </p>
       </div>
 
-      <!-- סרגל תאריכים -->
+      <!-- סרגל מעבר בין ימים -->
       <div class="flex items-center justify-between mt-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/50">
         <button onclick="changeDay(-1)" id="prevBtn" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold hover:bg-slate-700 transition">
           →
@@ -234,6 +234,9 @@
       } catch (e) {
         console.error(e);
       }
+      if (!data || typeof data !== 'object') {
+        data = {};
+      }
     }
 
     function init() {
@@ -277,6 +280,7 @@
     }
 
     function changeDay(delta) {
+      save(); // שמירה מאובטחת של היום הנוכחי
       const newIdx = viewingDayIndex + delta;
       if (newIdx >= 0 && newIdx <= 74) {
         viewingDayIndex = newIdx;
@@ -298,7 +302,7 @@
         badge.innerText = `לפני ${realTodayIndex - viewingDayIndex} ימים (ניתן לעריכה)`;
         badge.className = 'text-[10px] text-amber-400 font-semibold';
       } else {
-        badge.innerText = 'יום עתידי';
+        badge.innerText = `יום עתידי (+${viewingDayIndex - realTodayIndex})`;
         badge.className = 'text-[10px] text-slate-400 font-semibold';
       }
 
@@ -316,7 +320,6 @@
       const day = data[viewingDayIndex];
       const viewDate = getDateForIndex(viewingDayIndex);
       const isPsychoActive = viewDate <= PSYCHO_LIMIT;
-
       const isStepsDone = (day.steps >= 10000) || day.stepsChecked;
 
       const container = document.getElementById('tasksList');
@@ -469,7 +472,6 @@
       updateUI();
     }
 
-    // Force save on page exit/switch
     window.addEventListener('pagehide', () => {
       try {
         const payload = JSON.stringify(data);
@@ -478,6 +480,7 @@
       } catch(e){}
     });
 
+    // בדיקה האם יום כלשהו הושלם במלואו (100%) כולל חריגים מותרים
     function isDayCompleted(idx) {
       const d = data[idx];
       if (!d) return false;
@@ -485,12 +488,15 @@
       const needsPsycho = date <= PSYCHO_LIMIT;
 
       const stepsDone = (d.steps >= 10000) || d.stepsChecked;
+      const cleanFoodDone = d.cleanFood || d.cleanFoodEx;
+      const noAlcoholDone = d.noAlcohol || d.noAlcoholEx;
+
       const basicOk = d.workout && 
                       stepsDone && 
                       d.handstand && 
                       d.water && 
-                      (d.cleanFood || d.cleanFoodEx) && 
-                      (d.noAlcohol || d.noAlcoholEx);
+                      cleanFoodDone && 
+                      noAlcoholDone;
 
       if (needsPsycho) {
         return basicOk && d.psychometry;
@@ -498,18 +504,21 @@
       return basicOk;
     }
 
+    // חישוב הרצף הרציף הכולל
     function calculateStreak() {
       let streak = 0;
-      // בדיקה מהיום הנוכחי אחורה
-      for (let i = realTodayIndex; i >= 0; i--) {
+      let maxIdxToCheck = Math.max(realTodayIndex, viewingDayIndex);
+
+      // בדיקה מהיום הרחוק ביותר שמילאת אחורה עד יום 0
+      for (let i = maxIdxToCheck; i >= 0; i--) {
         if (isDayCompleted(i)) {
           streak++;
         } else {
-          // אם זה היום הנוכחי ועדיין לא סיימנו הכל, לא נשבור את הרצף של אתמול
-          if (i === realTodayIndex) {
+          // אם זה יום עתידי או היום הנוכחי שטרם הסתיים, ממשיכים לבדוק ימים קודמים ברצף
+          if (i >= realTodayIndex) {
             continue;
           }
-          break;
+          break; // יום עבר לא הושלם - הרצף נעצר
         }
       }
       return streak;
