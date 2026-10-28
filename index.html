@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>אתגר 75 יום לקראת הטיסה</title>
   
-  <!-- אייקון למסך הבית בעיצוב trust the process -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23f3ece4'/%3E%3Ctext x='50%25' y='36%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Etrust%3C/text%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Ethe%3C/text%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, Arial, sans-serif' font-weight='900' font-size='74' fill='%23111'%3Eprocess%3C/text%3E%3C/svg%3E">
   
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,7 +27,7 @@
     <div class="glass p-5 rounded-3xl shadow-xl border border-teal-500/20 text-center relative overflow-hidden">
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- תמונת הפרופיל -->
+      <!-- תמונת פרופיל -->
       <div class="flex justify-center mb-3">
         <div class="w-20 h-20 rounded-2xl bg-[#f3ece4] shadow-md border-2 border-slate-700/60 flex flex-col items-center justify-center text-slate-900 select-none">
           <span class="quote-font font-black text-[13px] leading-[1.05] tracking-tight">trust</span>
@@ -51,7 +50,7 @@
         </p>
       </div>
 
-      <!-- סרגל מעבר בין ימים -->
+      <!-- סרגל תאריכים -->
       <div class="flex items-center justify-between mt-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/50">
         <button onclick="changeDay(-1)" id="prevBtn" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold hover:bg-slate-700 transition">
           →
@@ -65,7 +64,7 @@
         </button>
       </div>
 
-      <!-- התקדמות -->
+      <!-- התקדמות יומית -->
       <div class="mt-4">
         <div class="flex justify-between items-center text-xs font-bold mb-1.5 px-1">
           <span class="text-slate-300">התקדמות יומית</span>
@@ -228,8 +227,10 @@
 
     function loadSavedData() {
       try {
-        const raw = localStorage.getItem('flight75_permanent_data');
-        if (raw) data = JSON.parse(raw);
+        const raw = localStorage.getItem('flight75_permanent_data') || localStorage.getItem('flight75_data');
+        if (raw) {
+          data = JSON.parse(raw);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -256,6 +257,7 @@
         data[idx] = {
           workout: false,
           steps: 0,
+          stepsChecked: false,
           handstand: false,
           water: false,
           cleanFood: false,
@@ -315,6 +317,8 @@
       const viewDate = getDateForIndex(viewingDayIndex);
       const isPsychoActive = viewDate <= PSYCHO_LIMIT;
 
+      const isStepsDone = (day.steps >= 10000) || day.stepsChecked;
+
       const container = document.getElementById('tasksList');
       container.innerHTML = `
         <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
@@ -338,7 +342,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="addSteps(1000)" class="text-[10px] bg-slate-800 border border-slate-700 px-2 py-1 rounded-lg text-slate-300">+1,000</button>
-            <input type="checkbox" ${day.steps >= 10000 ? 'checked' : ''} onchange="toggleStepsCheckbox()" class="w-5 h-5 rounded cursor-pointer">
+            <input type="checkbox" ${isStepsDone ? 'checked' : ''} onchange="toggleStepsCheckbox()" class="w-5 h-5 rounded cursor-pointer">
           </div>
         </div>
 
@@ -427,14 +431,20 @@
 
     function addSteps(amt) {
       data[viewingDayIndex].steps = (data[viewingDayIndex].steps || 0) + amt;
+      if (data[viewingDayIndex].steps >= 10000) {
+        data[viewingDayIndex].stepsChecked = true;
+      }
       save();
     }
 
     function toggleStepsCheckbox() {
-      if (data[viewingDayIndex].steps >= 10000) {
+      const current = (data[viewingDayIndex].steps >= 10000) || data[viewingDayIndex].stepsChecked;
+      if (current) {
         data[viewingDayIndex].steps = 0;
+        data[viewingDayIndex].stepsChecked = false;
       } else {
         data[viewingDayIndex].steps = 10000;
+        data[viewingDayIndex].stepsChecked = true;
       }
       save();
     }
@@ -449,7 +459,9 @@
 
     function save() {
       try {
-        localStorage.setItem('flight75_permanent_data', JSON.stringify(data));
+        const payload = JSON.stringify(data);
+        localStorage.setItem('flight75_permanent_data', payload);
+        localStorage.setItem('flight75_data', payload);
       } catch (e) {
         console.error(e);
       }
@@ -457,14 +469,24 @@
       updateUI();
     }
 
+    // Force save on page exit/switch
+    window.addEventListener('pagehide', () => {
+      try {
+        const payload = JSON.stringify(data);
+        localStorage.setItem('flight75_permanent_data', payload);
+        localStorage.setItem('flight75_data', payload);
+      } catch(e){}
+    });
+
     function isDayCompleted(idx) {
       const d = data[idx];
       if (!d) return false;
       const date = getDateForIndex(idx);
       const needsPsycho = date <= PSYCHO_LIMIT;
 
+      const stepsDone = (d.steps >= 10000) || d.stepsChecked;
       const basicOk = d.workout && 
-                      (d.steps >= 10000) && 
+                      stepsDone && 
                       d.handstand && 
                       d.water && 
                       (d.cleanFood || d.cleanFoodEx) && 
@@ -478,10 +500,15 @@
 
     function calculateStreak() {
       let streak = 0;
+      // בדיקה מהיום הנוכחי אחורה
       for (let i = realTodayIndex; i >= 0; i--) {
         if (isDayCompleted(i)) {
           streak++;
-        } else if (i < realTodayIndex) {
+        } else {
+          // אם זה היום הנוכחי ועדיין לא סיימנו הכל, לא נשבור את הרצף של אתמול
+          if (i === realTodayIndex) {
+            continue;
+          }
           break;
         }
       }
@@ -497,7 +524,7 @@
       let completed = 0;
 
       if (day.workout) completed++;
-      if ((day.steps || 0) >= 10000) completed++;
+      if ((day.steps || 0) >= 10000 || day.stepsChecked) completed++;
       if (day.handstand) completed++;
       if (day.water) completed++;
       if (day.cleanFood || day.cleanFoodEx) completed++;
